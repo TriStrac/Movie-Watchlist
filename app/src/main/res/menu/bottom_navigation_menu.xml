@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/homeMenu"
+        android:icon="@drawable/filled_baseline_home_24"
+        android:title="Home" />
+    <item
+        android:id="@+id/filterSearchMenu"
+        android:icon="@drawable/filled_baseline_filter_alt_24"
+        android:title="Filter" />
+    <item
+        android:id="@+id/watchedMenu"
+        android:icon="@drawable/filled_baseline_fact_check_24"
+        android:title="Watched" />
+    <item
+        android:id="@+id/settingsMenu"
+        android:icon="@drawable/filled_baseline_settings_24"
+        android:title="Settings" />
+    <item
+        android:id="@+id/profileMenu"
+        android:icon="@drawable/filled_baseline_person_24"
+        android:title="Profile" />
+</menu>

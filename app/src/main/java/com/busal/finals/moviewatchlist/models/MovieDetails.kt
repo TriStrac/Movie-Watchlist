@@ -1,6 +1,7 @@
 package com.busal.finals.moviewatchlist.models
 
 data class MovieDetails (
+    val id: Int,
     val poster: String,
     val type: String,
     val name: String,
@@ -11,6 +12,6 @@ data class MovieDetails (
     val director: String,
     val synopsis: String,
     val userRating: String,
-    val isWatched: Boolean,
-    val isRemoved: Boolean,
+    var isWatched: Boolean,
+    var isRemoved: Boolean,
 )

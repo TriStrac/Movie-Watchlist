@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MovieDetailsViewActivity">
+
+    <ImageView
+        android:id="@+id/moviePosterView"
+        android:layout_width="177dp"
+        android:layout_height="250dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.788"
+        android:src="@drawable/oshi_no_ko_tv_series_878287505_large" />
+
+    <TextView
+        android:id="@+id/typeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="anime"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/moviePosterView"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="@+id/moviePosterView"
+        app:layout_constraintTop_toTopOf="@+id/guideline6" />
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="oooooo"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/moviePosterView"
+        app:layout_constraintStart_toStartOf="@+id/moviePosterView"
+        app:layout_constraintTop_toBottomOf="@+id/typeText" />
+
+    <TextView
+        android:id="@+id/airedText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="year"
+        android:textAlignment="center"
+        app:chainUseRtl="false"
+        app:layout_constraintEnd_toStartOf="@+id/genresText"
+        app:layout_constraintHorizontal_bias="0.728"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleText" />
+
+    <TextView
+        android:id="@+id/genresText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="56dp"
+        android:text="genre"
+        android:textAlignment="center"
+        app:chainUseRtl="false"
+        app:layout_constraintEnd_toStartOf="@+id/ratingText"
+        app:layout_constraintTop_toTopOf="@+id/airedText" />
+
+    <TextView
+        android:id="@+id/ratingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="36dp"
+        android:text="PG-13"
+        android:textAlignment="center"
+        app:chainUseRtl="false"
+        app:layout_constraintEnd_toStartOf="@+id/durationText"
+        app:layout_constraintTop_toTopOf="@+id/genresText" />
+
+    <TextView
+        android:id="@+id/durationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="76dp"
+        android:text="1h2m"
+        android:textAlignment="center"
+        app:chainUseRtl="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ratingText" />
+
+    <TextView
+        android:id="@+id/directorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:text="director"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleText" />
+
+    <TextView
+        android:id="@+id/synopsisText"
+        android:layout_width="259dp"
+        android:layout_height="263dp"
+        android:layout_marginTop="4dp"
+        android:text="synopsissynopsissynopsissynopsissynopsissynopsissynopsis"
+        android:textAlignment="textStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/directorText" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4131327" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@
         android:layout_height="100dp">
 
         <ImageView
-            android:id="@+id/moviePoster2"
+            android:id="@+id/moviePosterWatched"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:adjustViewBounds="false"
@@ -47,7 +47,7 @@
             android:text="Genre"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@+id/statusText2"
-            app:layout_constraintTop_toTopOf="@+id/moviePoster2" />
+            app:layout_constraintTop_toTopOf="@+id/moviePosterWatched" />
 
         <TextView
             android:id="@+id/yearText2"

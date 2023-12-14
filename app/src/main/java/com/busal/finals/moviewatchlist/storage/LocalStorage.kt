@@ -9,6 +9,10 @@ class LocalStorage(context: Context) {
     private val sharedPref = context
         .getSharedPreferences("GENERAL", Context.MODE_PRIVATE)
 
+    var isSaved: Boolean
+        get() = sharedPref.getBoolean("KEY_ISSAVED",true)
+        set(value) = sharedPref.edit().putBoolean("KEY_ISSAVED",value).apply()
+
     private fun <T> Gson.toJson(src: T): String {
         return toJson(src)
     }

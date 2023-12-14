@@ -12,6 +12,7 @@ import com.busal.finals.moviewatchlist.MovieDetailsViewActivity
 import com.busal.finals.moviewatchlist.databinding.ActivityWatchedListAdapterBinding
 import com.busal.finals.moviewatchlist.models.MovieDetails
 import com.busal.finals.moviewatchlist.storage.LocalStorage
+import com.squareup.picasso.Picasso
 
 class WatchedListAdapter(
     private val activity: Activity,
@@ -23,6 +24,8 @@ class WatchedListAdapter(
         private val binding: ActivityWatchedListAdapterBinding
     ): RecyclerView.ViewHolder(binding.root){
         fun bind(movieDetails: MovieDetails){
+            val posterURL = movieDetails.poster
+            Picasso.get().load(posterURL).into(binding.moviePosterWatched)
             binding.movieTitleText2.text = movieDetails.name
             binding.yearText2.text = movieDetails.releaseDate
             binding.genreText2.text = movieDetails.genre

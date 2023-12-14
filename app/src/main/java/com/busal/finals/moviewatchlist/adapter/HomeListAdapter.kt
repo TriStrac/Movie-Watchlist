@@ -4,13 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.busal.finals.moviewatchlist.HomeFragment
 import com.busal.finals.moviewatchlist.MovieDetailsViewActivity
 import com.busal.finals.moviewatchlist.databinding.ActivityHomeListAdapterBinding
 import com.busal.finals.moviewatchlist.models.MovieDetails
 import com.busal.finals.moviewatchlist.storage.LocalStorage
+import com.squareup.picasso.Picasso
 
 
 class HomeListAdapter(
@@ -27,33 +26,37 @@ class HomeListAdapter(
         private val adapter: HomeListAdapter,
     ): RecyclerView.ViewHolder(binding.root){
         fun bind(position: Int){
-            val movieDetails = adapter.movieLists[position]
-            binding.movieTitleText.text = movieDetails.name
-            binding.yearText.text = movieDetails.releaseDate
-            binding.genreText.text = movieDetails.genre
+            val selectedMovie = adapter.movieLists[position]
+            val updateMovieList = LocalStorage(activity).movieList.toMutableList()
+            val posterURL = selectedMovie.poster
+            val index = updateMovieList.indexOfFirst { it.id == selectedMovie.id }
+            if(index != -1){
+                updateMovieList[index]=selectedMovie
+            }
+
+            Picasso.get().load(posterURL).into(binding.moviePoster)
+            binding.movieTitleText.text = selectedMovie.name
+            binding.yearText.text = selectedMovie.releaseDate
+            binding.genreText.text = selectedMovie.genre
             binding.watchedButton.setOnClickListener {
-                movieDetails.isWatched = true
-                adapter.saveToLocal(position)
+                selectedMovie.isWatched = true
+                LocalStorage(activity).movieList=updateMovieList
                 adapter.reloadList()
             }
             binding.removeButton.setOnClickListener {
-                movieDetails.isRemoved = true
-                adapter.saveToLocal(position)
+                selectedMovie.isRemoved = true
+                LocalStorage(activity).movieList=updateMovieList
                 adapter.reloadList()
             }
             binding.item.setOnClickListener{
                 val intent = Intent(activity,MovieDetailsViewActivity::class.java)
-                intent.putExtra("PARAM_ID",movieDetails.id)
+                intent.putExtra("PARAM_ID",selectedMovie.id)
                 activity.startActivity(intent)
             }
         }
 
     }
 
-    private fun saveToLocal(position: Int){
-        LocalStorage(activity).movieList = movieLists
-        notifyItemChanged(position)
-    }
     private fun reloadList(){
         listReloadListener.onListReloaded()
     }

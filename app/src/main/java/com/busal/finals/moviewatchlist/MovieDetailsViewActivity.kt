@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.busal.finals.moviewatchlist.databinding.ActivityMovieDetailsViewBinding
 import com.busal.finals.moviewatchlist.models.MovieDetails
 import com.busal.finals.moviewatchlist.storage.LocalStorage
+import com.squareup.picasso.Picasso
 
 class MovieDetailsViewActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMovieDetailsViewBinding
@@ -16,6 +17,8 @@ class MovieDetailsViewActivity : AppCompatActivity() {
         val movieId =intent.getIntExtra("PARAM_ID",-1)
         val movie = getMovieDetails(movieId)
         if (movie!=null){
+            val posterURL = movie.poster
+            Picasso.get().load(posterURL).into(binding.moviePosterView)
             binding.typeText.text = movie.type
             binding.titleText.text = movie.name
             binding.airedText.text = movie.releaseDate

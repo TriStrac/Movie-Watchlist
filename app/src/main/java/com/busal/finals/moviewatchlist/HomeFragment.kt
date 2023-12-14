@@ -2,6 +2,7 @@ package com.busal.finals.moviewatchlist
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -48,13 +49,23 @@ class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener {
             binding.searchBarText.visibility = View.INVISIBLE
         }
 
-        initializeMovies()
-        saveToLocal()
+        binding.addMovieButton.setOnClickListener {
+            for (movieDetails in movieList) {
+                Log.d("MovieDetails", movieDetails.toString())
+            }
+        }
+
+        if(LocalStorage(requireContext()).isSaved){
+            initializeMovies()
+            LocalStorage(requireContext()).isSaved=false
+            saveToLocal()
+        }
         displayMovies()
         return binding.root
     }
     override fun onListReloaded() {
         displayMovies()
+        movieList = LocalStorage(requireContext()).movieList
     }
     private lateinit var listToDisplay:List<MovieDetails>
     private fun filterDisplay(){
@@ -71,26 +82,16 @@ class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener {
     }
     private fun initializeMovies(){
         movieList=listOf(
-            MovieDetails(1,"poster link","Anime","Oshi no ko","2023","kPop","PG","12 episodes","YOASOBI","eren dead","5",false,false),
-            MovieDetails(2,"poster link","Anime","kanojo mo kanojo","2032","kids","G","200","YOASOBI","eren sdfsgsdfsdfgdead","5",false,false),
-            MovieDetails(3,"poster link","Anime","genshit impact","2212","kids","PG","12 episodes","YOASOBI","erensfggsfdsfdgsdfg dead","5",false,false),
-            MovieDetails(4,"poster link","Anime","insidious","2122","horror","PG","12 episodes","YOASOBI","eren dsgdfsdfgsdfgsgdfead","5",false,false),
-            MovieDetails(5,"poster link","Anime","hahahahaha","2444","kids","PG","200","YOASOBI","eren gsfdsgdfsdfgdead","5",false,false),
-            MovieDetails(12,"poster link","Anime","Oshi no ko","2332","horror","G","200","YOASOBI","eren dead","5",false,false),
-            MovieDetails(22,"poster link","Anime","kanojo mo kanojo","2014","kids","ALL","12 episodes","YOASOBI","sdfggsdfsdfgsdfgeren dead","5",false,false),
-            MovieDetails(32,"poster link","Anime","genshit impact","2013","horror","18+","200","Hololive","sdfgsdfgsdfgsdgferen dead","5",false,false),
-            MovieDetails(42,"poster link","Anime","insidious","2022","kids","G","200","Hololive","ersdfsdfsdfsdfen dead","5",false,false),
-            MovieDetails(52,"poster link","Anime","hahahahaha","2212","horror","18+","12 episodes","YOASOBI","eresdfsdfsdfsdfn dead","5",false,false),
-            MovieDetails(13,"poster link","Anime","Oshi no ko","2112","kids","G","200","Hololive","eren dead","5",false,false),
-            MovieDetails(23,"poster link","Anime","kanojo mo kanojo","2312","horror","18+","200","Hololive","eren 3422344232dead","5",false,false),
-            MovieDetails(33,"poster link","Anime","genshit impact","2412","kids","G","200","YOASOBI","eren432342342 dead","5",false,false),
-            MovieDetails(43,"poster link","Anime","insidious","2052","horror","G","12 episodes","Hololive","ereredw43w4n dead","5",false,false),
-            MovieDetails(53,"poster link","Anime","hahahahaha","2066","kids","ALL","200","YOASOBI","eren w43w43w43dead","5",false,false),
-            MovieDetails(14,"poster link","Anime","Oshi no ko","2055","horror","G","200","Hololive","eren dew43w43w4ad","5",false,false),
-            MovieDetails(24,"poster link","Anime","kanojo mo kanojo","2333","kids","ALL","200","YOASOBI","erenw34w43w34 dead","5",false,false),
-            MovieDetails(34,"poster link","Anime","genshit impact","2212","horror","G","200","Hololive","eren dew34w34w34ad","5",false,false),
-            MovieDetails(44,"poster link","Anime","insidious","2012","kids","ALL","200","YOASOBI","w34w34w34eren dead","5",false,false),
-            MovieDetails(54,"poster link","Anime","hahahahaha","2011","adults","G","200","Hololive","erew34w343w4w34n dead","5",false,false),
+            MovieDetails(1, "https://m.media-amazon.com/images/M/MV5BZmUwNGU0ODAtNGUxNy00ZjZmLTgzODgtMjQ2MWUyZjI4MmFkXkEyXkFqcGdeQXVyNjA5MDIyMzU@._V1_.jpg", "Anime", "Oshi no ko", "2023", "Drama", "PG", "12 episodes", "YOASOBI", "eren dead", "5", false, false),
+            MovieDetails(2, "https://thenationroar.com/wp-content/uploads/2020/04/attack-on-titan-cast.jpg", "Anime", "Attack on Titan", "2013", "Action", "R", "25 episodes", "Wit Studio", "Fight for survival against titans", "4.5", false, false),
+            MovieDetails(3, "https://i0.wp.com/wallpapercave.com/wp/wp7693752.jpg", "Anime", "My Hero Academia", "2016", "Action", "PG-13", "13 episodes", "Bones", "Superheroes in training", "4.8", false, false),
+            MovieDetails(4, "https://image.tmdb.org/t/p/original/Sw50QpmJFUsWELy4z9QhTHFmas.jpg", "Anime", "Demon Slayer", "2019", "Action", "R", "26 episodes", "ufotable", "Tanjiro's journey to save his sister", "4.7", false, false),
+            MovieDetails(5, "https://dailyanimeart.files.wordpress.com/2015/10/one-punch-man-poster.jpg", "Anime", "One Punch Man", "2015", "Action", "PG-13", "12 episodes", "Madhouse", "Saitama's quest for a challenging fight", "4.6", false, false),
+            MovieDetails(6, "https://th.bing.com/th/id/R.c195b754307fae0a538500b4c9b38398?rik=ici%2fwOVE8EjDhA&riu=http%3a%2f%2fwww.impawards.com%2f2002%2fposters%2fspirited_away_xlg.jpg&ehk=uNNBDTzGq9TXFcjEKxAh5JonBZGpEvioAMhq%2bmM2lkQ%3d&risl=&pid=ImgRaw&r=0", "Anime", "Spirited Away", "2001", "Adventure", "PG", "1 hr 58 min", "Studio Ghibli", "Chihiro's magical journey in the spirit world", "4.9", false, false),
+            MovieDetails(7, "https://th.bing.com/th/id/R.22faa5d6b1abb488503cbd8887baf84b?rik=jHI%2fDB5JNswXUQ&riu=http%3a%2f%2fscreencritix.com%2fwp-content%2fuploads%2f2013%2f10%2fdeath-note-poster.jpg&ehk=THUxplwPtT%2bxqZbr8lFinBYCP9Az50QaXvdrs9gfo00%3d&risl=&pid=ImgRaw&r=0", "Anime", "Death Note", "2006", "Mystery", "R", "37 episodes", "Madhouse", "Light Yagami's use of the Death Note", "4.8", false, false),
+            MovieDetails(8, "https://image.tmdb.org/t/p/original/pZ7qsb8kqYqQuFzjFeAQ2IlbiXW.jpg", "Anime", "Your Name", "2016", "Drama", "PG", "1 hr 46 min", "CoMix Wave Films", "Taki and Mitsuha's body-swapping adventure", "4.9", false, false),
+            MovieDetails(9, "https://image.tmdb.org/t/p/original/7zcIgfFGtHGyvS9tQhCFmjoMu14.jpg", "Anime", "Cowboy Bebop", "1998", "Sci-Fi", "R", "26 episodes", "Sunrise", "Bounty hunting in space with Spike Spiegel", "4.7", false, false),
+            MovieDetails(10, "https://images.saymedia-content.com/.image/t_share/MTkzNTg0NzAyNDU5ODE1MzYz/the-21-saddest-anime-masterpiece-you-must-binge-watch.jpg", "Anime", "Fullmetal Alchemist: Brotherhood", "2009", "Fantasy", "R", "64 episodes", "Bones", "Edward and Alphonse Elric's quest for the Philosopher's Stone", "4.9", false, false)
         )
     }
 }

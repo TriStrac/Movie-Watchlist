@@ -13,11 +13,10 @@ class LocalStorage(context: Context) {
         get() = sharedPref.getBoolean("KEY_ISSAVED",true)
         set(value) = sharedPref.edit().putBoolean("KEY_ISSAVED",value).apply()
 
-    private fun <T> Gson.toJson(src: T): String {
-        return toJson(src)
+    private inline fun <reified T> Gson.toJson(src: T): String {
+        return toJson(src, object : TypeToken<T>() {}.type)
     }
 
-    // Helper method to convert a Json string to a list
     private inline fun <reified T> Gson.fromJson(json: String): T {
         return fromJson(json, object : TypeToken<T>() {}.type)
     }
@@ -35,5 +34,20 @@ class LocalStorage(context: Context) {
             val gson = Gson()
             val json = gson.toJson(value)
             sharedPref.edit().putString("KEY_MOVIE_LIST", json).apply()
+        }
+
+    var searchedMovieList: List<MovieDetails>
+        get() {
+            val json: String? = sharedPref.getString("KEY_SEARCHED_MOVIE_LIST", null)
+            return if (json != null) {
+                Gson().fromJson(json)
+            } else {
+                emptyList()
+            }
+        }
+        set(value) {
+            val gson = Gson()
+            val json = gson.toJson(value)
+            sharedPref.edit().putString("KEY_SEARCHED_MOVIE_LIST", json).apply()
         }
 }

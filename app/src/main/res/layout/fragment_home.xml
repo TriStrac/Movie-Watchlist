@@ -11,19 +11,29 @@
         android:layout_height="match_parent">
 
         <EditText
-            android:id="@+id/searchBarText"
+            android:id="@+id/searchWatchListBarText"
             android:layout_width="270dp"
             android:layout_height="46dp"
+            android:layout_marginTop="2dp"
             android:ems="10"
-            android:hint="Search"
+            android:hint="Search watchlist"
             android:inputType="text"
             android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.113"
+            app:layout_constraintEnd_toStartOf="@+id/doneButton"
+            app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.555" />
+            app:layout_constraintTop_toTopOf="@+id/doneButton" />
+        <TextView
+            android:id="@+id/addMoviesMessageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add a Movie"
+            android:textSize="25sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/guideline7"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline7" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/movieListRecyclerView"
@@ -54,7 +64,7 @@
             android:layout_marginTop="8dp"
             android:text="Search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.703"
+            app:layout_constraintHorizontal_bias="0.629"
             app:layout_constraintStart_toEndOf="@+id/addMovieButton"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -69,19 +79,84 @@
             android:id="@+id/doneButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
             android:text="Done"
             android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/searchBarText"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier2"
+        <Button
+            android:id="@+id/animeAddButton"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="40dp"
+            android:text="Anime"
+            android:textSize="25sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/guideline7"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/movieAddButton"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="40dp"
+            android:text="Movie"
+            android:textSize="25sp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="@+id/animeAddButton"
+            app:layout_constraintStart_toStartOf="@+id/animeAddButton"
+            app:layout_constraintTop_toTopOf="@+id/guideline7" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:barrierDirection="top"
-            app:constraint_referenced_ids="movieListRecyclerView" />
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="0dp"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <EditText
+            android:id="@+id/addSearchQueryText"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Search"
+            android:inputType="text"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/guideline7"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.034" />
+
+        <Button
+            android:id="@+id/cancelSearchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Done"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/addSearchQueryText"
+            app:layout_constraintEnd_toStartOf="@+id/addSearchQueryText"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/addSearchQueryText" />
+
+        <Button
+            android:id="@+id/proceedSearchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Find"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/addSearchQueryText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.058"
+            app:layout_constraintStart_toEndOf="@+id/addSearchQueryText"
+            app:layout_constraintTop_toTopOf="@+id/addSearchQueryText"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

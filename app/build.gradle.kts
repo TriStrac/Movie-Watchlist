@@ -43,6 +43,8 @@ dependencies {
 
     implementation ("com.google.code.gson:gson:2.9.0")
     implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

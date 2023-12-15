@@ -1,19 +1,29 @@
 package com.busal.finals.moviewatchlist
 
 import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.busal.finals.moviewatchlist.adapter.HomeListAdapter
+import com.busal.finals.moviewatchlist.adapter.SearchListAdapter
 import com.busal.finals.moviewatchlist.databinding.FragmentHomeBinding
 import com.busal.finals.moviewatchlist.models.MovieDetails
 import com.busal.finals.moviewatchlist.storage.LocalStorage
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
-class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener {
+class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener, SearchListAdapter.ListReloadListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -27,71 +37,272 @@ class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener {
 
     private lateinit var binding:FragmentHomeBinding
     private lateinit var movieList:List<MovieDetails>
+    private lateinit var searchedMovieList:List<MovieDetails>
+    private var isAddMovie = false
+    private var toggleAnimeOrMovie = true
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomeBinding.inflate(inflater,container,false)
 
         binding.searchButton.setOnClickListener {
-
-
             binding.searchButton.visibility = View.INVISIBLE
             binding.addMovieButton.visibility = View.INVISIBLE
             binding.doneButton.visibility = View.VISIBLE
-            binding.searchBarText.visibility = View.VISIBLE
+            binding.searchWatchListBarText.visibility = View.VISIBLE
         }
 
         binding.doneButton.setOnClickListener {
             binding.searchButton.visibility = View.VISIBLE
             binding.addMovieButton.visibility = View.VISIBLE
             binding.doneButton.visibility = View.INVISIBLE
-            binding.searchBarText.visibility = View.INVISIBLE
+            binding.searchWatchListBarText.visibility = View.INVISIBLE
         }
 
         binding.addMovieButton.setOnClickListener {
-            for (movieDetails in movieList) {
-                Log.d("MovieDetails", movieDetails.toString())
+            if(isAddMovie){
+                binding.addMovieButton.text = getString(R.string.add_movie)
+                binding.searchButton.visibility = View.VISIBLE
+                binding.animeAddButton.visibility = View.INVISIBLE
+                binding.movieAddButton.visibility = View.INVISIBLE
+                loadLocal()
+                isListEmpty()
+                binding.movieListRecyclerView.visibility = View.VISIBLE
+                isAddMovie = false
+            }else{
+                binding.addMovieButton.text = getString(R.string.done_)
+                binding.searchButton.visibility = View.INVISIBLE
+                binding.animeAddButton.visibility = View.VISIBLE
+                binding.movieAddButton.visibility = View.VISIBLE
+                binding.movieListRecyclerView.visibility = View.INVISIBLE
+                binding.addMoviesMessageText.visibility = View.INVISIBLE
+                isAddMovie = true
             }
         }
 
-        if(LocalStorage(requireContext()).isSaved){
-            initializeMovies()
-            LocalStorage(requireContext()).isSaved=false
-            saveToLocal()
+        binding.animeAddButton.setOnClickListener {
+            toggleAnimeOrMovie=true
+            searchAnimeOrMovie()
         }
-        displayMovies()
+        binding.movieAddButton.setOnClickListener {
+            toggleAnimeOrMovie=false
+            searchAnimeOrMovie()
+        }
+        binding.cancelSearchButton.setOnClickListener {
+            binding.addSearchQueryText.visibility = View.INVISIBLE
+            binding.cancelSearchButton.visibility = View.INVISIBLE
+            binding.proceedSearchButton.visibility = View.INVISIBLE
+            binding.movieListRecyclerView.visibility = View.INVISIBLE
+            binding.animeAddButton.visibility = View.VISIBLE
+            binding.movieAddButton.visibility = View.VISIBLE
+            binding.addMovieButton.visibility = View.VISIBLE
+        }
+
+        binding.proceedSearchButton.setOnClickListener {
+            queryApiSearch()
+        }
+
+        loadLocal()
+        isListEmpty()
+
         return binding.root
     }
-    override fun onListReloaded() {
-        displayMovies()
-        movieList = LocalStorage(requireContext()).movieList
+
+    private fun queryApiSearch() {
+        val query = binding.addSearchQueryText.text.toString().trim()
+        if (query.isNotEmpty()) {
+            if (toggleAnimeOrMovie) {
+                lifecycleScope.launch {
+                    val result = animeSearch(query)
+                    handleAnimeSearchResult(result)
+                    getSearchedFromLocal()
+                    filterSearched()
+                    getSearchedFromLocal()
+                    displaySearchResults()
+                    binding.movieListRecyclerView.visibility = View.VISIBLE
+                }
+            }
+        }
     }
+
+    private fun getSearchedFromLocal(){
+        searchedMovieList = LocalStorage(requireContext()).searchedMovieList
+    }
+    private fun displaySearchResults(){
+        binding.movieListRecyclerView.adapter = null
+        binding.movieListRecyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.movieListRecyclerView.adapter = SearchListAdapter(requireActivity(),searchedMovieList,this)
+    }
+
+    private fun filterSearched() {
+        val localMovieList = LocalStorage(requireContext()).movieList
+        val localMovieIds = localMovieList.map { it.id } ?: emptyList()
+        val filteredMovieList = searchedMovieList.filter { movie ->
+            movie.id !in localMovieIds
+        }
+        LocalStorage(requireContext()).searchedMovieList = filteredMovieList
+    }
+
+    private suspend fun animeSearch(query: String): String {
+        val apiUrl = "https://api.jikan.moe/v4/anime?q=${query}"
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(apiUrl)
+                val connection = url.openConnection() as HttpURLConnection
+
+                val inputStream = connection.inputStream
+                val reader = BufferedReader(InputStreamReader(inputStream))
+                val response = StringBuilder()
+
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    response.append(line)
+                }
+
+                reader.close()
+                inputStream.close()
+
+                return@withContext response.toString()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            return@withContext ""
+        }
+    }
+    private fun handleAnimeSearchResult(result: String) {
+        try {
+            val jsonResponse = JSONObject(result)
+
+            // Check if "data" key exists
+            if (jsonResponse.has("data")) {
+                val dataArray = jsonResponse.getJSONArray("data")
+
+                // Create a list to store MovieDetails objects
+                val searchedMovieListPrivate = mutableListOf<MovieDetails>()
+
+                for (i in 0 until dataArray.length()) {
+                    val animeObject = dataArray.getJSONObject(i)
+                    val malId = animeObject.getInt("mal_id")
+                    val title = animeObject.getString("title")
+
+                    val airedObject = animeObject.getJSONObject("aired")
+                    val airedPropObject = airedObject.getJSONObject("prop")
+                    val airedFromObject = airedPropObject.getJSONObject("from")
+
+                    val genresArray = animeObject.getJSONArray("genres")
+                    val genres = mutableListOf<String>()
+                    for (j in 0 until genresArray.length()) {
+                        val genreObject = genresArray.getJSONObject(j)
+                        val genreName = genreObject.getString("name")
+                        genres.add(genreName)
+                    }
+
+
+
+                    val imagesObject = animeObject.getJSONObject("images")
+                    val posterLink = imagesObject.getJSONObject("jpg").getString("large_image_url")
+                    val synopsis = animeObject.getString("synopsis")
+                    val episodes = animeObject.getString("episodes")
+                    val duration = animeObject.getString("duration")
+                    val newDuration = "$episodes episodes, $duration"
+
+                    val studiosArray = animeObject.getJSONArray("studios")
+                    val studio = mutableListOf<String>()
+                    for (j in 0 until studiosArray.length()) {
+                        val studioObject = studiosArray.getJSONObject(j)
+                        val studioName = studioObject.getString("name")
+                        studio.add(studioName)
+                    }
+
+                    val releaseYear = airedFromObject.getString("year")
+                    val rating = animeObject.getString("rating")
+
+                    val movieDetails = MovieDetails(
+                        malId,
+                        posterLink,
+                        "Anime",
+                        title,
+                        releaseYear,
+                        genres.joinToString(),
+                        rating,
+                        newDuration,
+                        "Studio: ${studio.joinToString()}",
+                        synopsis,
+                        "unrated",
+                        isWatched = false, isRemoved = false
+                    )
+                    searchedMovieListPrivate.add(movieDetails)
+                }
+
+                LocalStorage(requireContext()).searchedMovieList = searchedMovieListPrivate
+            } else {
+                Log.w("AnimeSearchTask", "No 'data' key found in the JSON response")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun searchAnimeOrMovie(){
+        binding.addSearchQueryText.visibility = View.VISIBLE
+        binding.cancelSearchButton.visibility = View.VISIBLE
+        binding.proceedSearchButton.visibility = View.VISIBLE
+        binding.animeAddButton.visibility = View.INVISIBLE
+        binding.movieAddButton.visibility = View.INVISIBLE
+        binding.addMovieButton.visibility = View.INVISIBLE
+        if(toggleAnimeOrMovie){
+            binding.addSearchQueryText.hint = "Search Anime.."
+        }else{
+            binding.addSearchQueryText.hint = "Search Movie.."
+        }
+    }
+    override fun onListReloaded(source:String) {
+        when (source) {
+            "HomeListAdapter" -> {
+                displayMovies()
+                loadLocal()
+                isListEmpty()
+            }
+            "SearchListAdapter" -> {
+                filterSearched()
+                getSearchedFromLocal()
+                displaySearchResults()
+
+            }
+        }
+    }
+
+    private fun isListEmpty(){
+        if(movieList.isNotEmpty()){
+            displayMovies()
+            if(listToDisplay.isEmpty()){
+                binding.addMoviesMessageText.visibility = View.VISIBLE
+            }else{
+                binding.addMoviesMessageText.visibility = View.INVISIBLE
+            }
+        }else{
+            binding.addMoviesMessageText.visibility = View.VISIBLE
+        }
+    }
+
     private lateinit var listToDisplay:List<MovieDetails>
     private fun filterDisplay(){
+        binding.movieListRecyclerView.adapter = null
         listToDisplay = LocalStorage(requireContext()).movieList
         listToDisplay = listToDisplay.filter { !it.isRemoved && !it.isWatched }
     }
     private fun displayMovies(){
         filterDisplay()
+        binding.movieListRecyclerView.adapter = null
         binding.movieListRecyclerView.layoutManager = LinearLayoutManager(activity)
         binding.movieListRecyclerView.adapter = HomeListAdapter(requireActivity(), listToDisplay,this)
     }
-    private fun saveToLocal(){
-        LocalStorage(requireContext()).movieList=movieList
+    private fun loadLocal(){
+        movieList=LocalStorage(requireContext()).movieList
     }
-    private fun initializeMovies(){
-        movieList=listOf(
-            MovieDetails(1, "https://m.media-amazon.com/images/M/MV5BZmUwNGU0ODAtNGUxNy00ZjZmLTgzODgtMjQ2MWUyZjI4MmFkXkEyXkFqcGdeQXVyNjA5MDIyMzU@._V1_.jpg", "Anime", "Oshi no ko", "2023", "Drama", "PG", "12 episodes", "YOASOBI", "eren dead", "5", false, false),
-            MovieDetails(2, "https://thenationroar.com/wp-content/uploads/2020/04/attack-on-titan-cast.jpg", "Anime", "Attack on Titan", "2013", "Action", "R", "25 episodes", "Wit Studio", "Fight for survival against titans", "4.5", false, false),
-            MovieDetails(3, "https://i0.wp.com/wallpapercave.com/wp/wp7693752.jpg", "Anime", "My Hero Academia", "2016", "Action", "PG-13", "13 episodes", "Bones", "Superheroes in training", "4.8", false, false),
-            MovieDetails(4, "https://image.tmdb.org/t/p/original/Sw50QpmJFUsWELy4z9QhTHFmas.jpg", "Anime", "Demon Slayer", "2019", "Action", "R", "26 episodes", "ufotable", "Tanjiro's journey to save his sister", "4.7", false, false),
-            MovieDetails(5, "https://dailyanimeart.files.wordpress.com/2015/10/one-punch-man-poster.jpg", "Anime", "One Punch Man", "2015", "Action", "PG-13", "12 episodes", "Madhouse", "Saitama's quest for a challenging fight", "4.6", false, false),
-            MovieDetails(6, "https://th.bing.com/th/id/R.c195b754307fae0a538500b4c9b38398?rik=ici%2fwOVE8EjDhA&riu=http%3a%2f%2fwww.impawards.com%2f2002%2fposters%2fspirited_away_xlg.jpg&ehk=uNNBDTzGq9TXFcjEKxAh5JonBZGpEvioAMhq%2bmM2lkQ%3d&risl=&pid=ImgRaw&r=0", "Anime", "Spirited Away", "2001", "Adventure", "PG", "1 hr 58 min", "Studio Ghibli", "Chihiro's magical journey in the spirit world", "4.9", false, false),
-            MovieDetails(7, "https://th.bing.com/th/id/R.22faa5d6b1abb488503cbd8887baf84b?rik=jHI%2fDB5JNswXUQ&riu=http%3a%2f%2fscreencritix.com%2fwp-content%2fuploads%2f2013%2f10%2fdeath-note-poster.jpg&ehk=THUxplwPtT%2bxqZbr8lFinBYCP9Az50QaXvdrs9gfo00%3d&risl=&pid=ImgRaw&r=0", "Anime", "Death Note", "2006", "Mystery", "R", "37 episodes", "Madhouse", "Light Yagami's use of the Death Note", "4.8", false, false),
-            MovieDetails(8, "https://image.tmdb.org/t/p/original/pZ7qsb8kqYqQuFzjFeAQ2IlbiXW.jpg", "Anime", "Your Name", "2016", "Drama", "PG", "1 hr 46 min", "CoMix Wave Films", "Taki and Mitsuha's body-swapping adventure", "4.9", false, false),
-            MovieDetails(9, "https://image.tmdb.org/t/p/original/7zcIgfFGtHGyvS9tQhCFmjoMu14.jpg", "Anime", "Cowboy Bebop", "1998", "Sci-Fi", "R", "26 episodes", "Sunrise", "Bounty hunting in space with Spike Spiegel", "4.7", false, false),
-            MovieDetails(10, "https://images.saymedia-content.com/.image/t_share/MTkzNTg0NzAyNDU5ODE1MzYz/the-21-saddest-anime-masterpiece-you-must-binge-watch.jpg", "Anime", "Fullmetal Alchemist: Brotherhood", "2009", "Fantasy", "R", "64 episodes", "Bones", "Edward and Alphonse Elric's quest for the Philosopher's Stone", "4.9", false, false)
-        )
-    }
+
+
 }

@@ -18,7 +18,7 @@ class HomeListAdapter(
     private val listReloadListener: ListReloadListener
 ): RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>(){
     interface ListReloadListener {
-        fun onListReloaded()
+        fun onListReloaded(source: String)
     }
     class HomeListViewHolder(
         private val activity: Activity,
@@ -41,12 +41,12 @@ class HomeListAdapter(
             binding.watchedButton.setOnClickListener {
                 selectedMovie.isWatched = true
                 LocalStorage(activity).movieList=updateMovieList
-                adapter.reloadList()
+                adapter.reloadList("HomeListAdapter")
             }
             binding.removeButton.setOnClickListener {
                 selectedMovie.isRemoved = true
                 LocalStorage(activity).movieList=updateMovieList
-                adapter.reloadList()
+                adapter.reloadList("HomeListAdapter")
             }
             binding.item.setOnClickListener{
                 val intent = Intent(activity,MovieDetailsViewActivity::class.java)
@@ -57,8 +57,8 @@ class HomeListAdapter(
 
     }
 
-    private fun reloadList(){
-        listReloadListener.onListReloaded()
+    private fun reloadList(source:String){
+        listReloadListener.onListReloaded(source)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeListViewHolder {

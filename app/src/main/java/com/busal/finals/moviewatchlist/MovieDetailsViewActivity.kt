@@ -9,12 +9,14 @@ import com.squareup.picasso.Picasso
 
 class MovieDetailsViewActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMovieDetailsViewBinding
+    private var isAddOrCheck : Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMovieDetailsViewBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         val movieId =intent.getIntExtra("PARAM_ID",-1)
+        isAddOrCheck = intent.getBooleanExtra("PARAM_ADDORCHECK",false)
         val movie = getMovieDetails(movieId)
         if (movie!=null){
             val posterURL = movie.poster
@@ -30,7 +32,13 @@ class MovieDetailsViewActivity : AppCompatActivity() {
         }
     }
     private fun getMovieDetails(id:Int): MovieDetails?{
-        val movieList = LocalStorage(this).movieList
+        val movieList : List<MovieDetails>
+        if(isAddOrCheck){
+            movieList = LocalStorage(this).searchedMovieList
+        }else{
+            movieList = LocalStorage(this).movieList
+        }
+
         return movieList.find{it.id==id}
     }
 }

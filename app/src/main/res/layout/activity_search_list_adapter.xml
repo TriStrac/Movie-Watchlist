@@ -2,20 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/item2"
+    android:id="@+id/item"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingTop="3dp"
     android:paddingBottom="3dp"
-    tools:context=".adapter.HomeListAdapter">
+    tools:context=".adapter.SearchListAdapter">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="100dp">
 
         <ImageView
-            android:id="@+id/moviePosterWatched"
+            android:id="@+id/searchedMoviePoster"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:adjustViewBounds="false"
@@ -27,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/movieTitleText2"
+            android:id="@+id/searchedMovieTitleText"
             android:layout_width="370dp"
             android:layout_height="45dp"
             android:layout_marginTop="16dp"
@@ -39,39 +39,41 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/genreText2"
+            android:id="@+id/searchedGenreText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="68dp"
+            android:layout_marginBottom="18dp"
             android:text="Genre"
             android:textAlignment="center"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/statusText2"
-            app:layout_constraintHorizontal_bias="0.50"
-            app:layout_constraintStart_toEndOf="@+id/yearText2"
-            app:layout_constraintTop_toTopOf="@+id/moviePosterWatched" />
+            app:layout_constraintBottom_toBottomOf="@+id/searchedYearText"
+            app:layout_constraintEnd_toStartOf="@+id/searchedAddToWatchListButton"
+            app:layout_constraintHorizontal_bias="0.51"
+            app:layout_constraintStart_toEndOf="@+id/searchedYearText"
+            app:layout_constraintTop_toTopOf="@+id/searchedYearText"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/yearText2"
+            android:id="@+id/searchedYearText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="Year"
+            android:textAlignment="textStart"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/genreText2"
-            app:layout_constraintStart_toStartOf="@+id/movieTitleText2"
-            app:layout_constraintTop_toTopOf="@+id/genreText2" />
+            app:layout_constraintStart_toStartOf="@+id/searchedMovieTitleText"
+            app:layout_constraintTop_toBottomOf="@+id/searchedMovieTitleText" />
 
-        <TextView
-            android:id="@+id/statusText2"
+        <Button
+            android:id="@+id/searchedAddToWatchListButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
-            android:text="STATUS"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/movieTitleText2"
-            app:layout_constraintTop_toTopOf="@+id/genreText2" />
-
+            android:layout_height="40dp"
+            android:layout_marginStart="244dp"
+            android:text="Add to List"
+            app:layout_constraintEnd_toEndOf="@+id/searchedMovieTitleText"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchedMovieTitleText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.busal.finals.moviewatchlist.adapter.HomeListAdapter
 import com.busal.finals.moviewatchlist.adapter.WatchedListAdapter
 import com.busal.finals.moviewatchlist.databinding.FragmentWatchedBinding
 import com.busal.finals.moviewatchlist.models.MovieDetails
@@ -32,11 +31,11 @@ class WatchedFragment : Fragment() {
         showWatched()
         binding.watchedOrRemovedButton.setOnClickListener {
             if(onWatched){
-                binding.watchedOrRemovedButton.text="Removed"
+                binding.watchedOrRemovedButton.text= getString(R.string.removed)
                 onWatched=false
                 showRemoved()
             }else{
-                binding.watchedOrRemovedButton.text="Watched"
+                binding.watchedOrRemovedButton.text= getString(R.string.watched)
                 onWatched=true
                 showWatched()
             }

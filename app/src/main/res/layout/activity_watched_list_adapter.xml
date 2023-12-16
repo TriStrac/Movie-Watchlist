@@ -5,6 +5,7 @@
     android:id="@+id/item2"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:background="#00000000"
     android:orientation="vertical"
     android:paddingTop="3dp"
     android:paddingBottom="3dp"
@@ -28,13 +29,16 @@
 
         <TextView
             android:id="@+id/movieTitleText2"
-            android:layout_width="370dp"
-            android:layout_height="45dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
             android:layout_marginTop="16dp"
+            android:maxWidth="370dp"
+            android:maxHeight="45dp"
             android:text="Long movie title long movie title long movie title"
+            android:textAlignment="viewStart"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.512"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,8 +49,9 @@
             android:layout_marginTop="68dp"
             android:text="Genre"
             android:textAlignment="center"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/statusText2"
+            app:layout_constraintEnd_toStartOf="@+id/userRatingText"
             app:layout_constraintHorizontal_bias="0.50"
             app:layout_constraintStart_toEndOf="@+id/yearText2"
             app:layout_constraintTop_toTopOf="@+id/moviePosterWatched" />
@@ -56,6 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Year"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/genreText2"
             app:layout_constraintStart_toStartOf="@+id/movieTitleText2"
@@ -65,12 +71,26 @@
             android:id="@+id/statusText2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
+            android:layout_marginEnd="20dp"
             android:text="STATUS"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/movieTitleText2"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/genreText2" />
+
+        <TextView
+            android:id="@+id/userRatingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/statusText2"
+            app:layout_constraintEnd_toStartOf="@+id/statusText2"
+            app:layout_constraintTop_toTopOf="@+id/statusText2"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

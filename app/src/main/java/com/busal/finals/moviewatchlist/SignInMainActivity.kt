@@ -12,11 +12,7 @@ class SignInMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.signInButton.setOnClickListener {
-            if(isSignedIn()){
-                proceedToMain()
-            }
-        }
+        proceedToMain()
 
 
     }

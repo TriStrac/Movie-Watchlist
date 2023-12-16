@@ -5,4 +5,6 @@
     <string name="add_movie">Add Movie</string>
     <string name="cancel">Cancel</string>
     <string name="done_">Done</string>
+    <string name="removed">Removed</string>
+    <string name="watched">Watched</string>
 </resources>

@@ -26,14 +26,6 @@ class WatchListActivity : AppCompatActivity() {
                     replaceFragment(WatchedFragment())
                     true
                 }
-                R.id.settingsMenu -> {
-                    replaceFragment(SettingsFragment())
-                    true
-                }
-                R.id.profileMenu -> {
-                    replaceFragment(ProfileFragment())
-                    true
-                }
                 else -> false
             }
         }

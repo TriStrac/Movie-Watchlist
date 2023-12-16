@@ -20,8 +20,10 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.lang.Integer.min
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 
 class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener, SearchListAdapter.ListReloadListener {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,7 +102,9 @@ class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener, SearchListA
         }
 
         binding.proceedSearchButton.setOnClickListener {
-            queryApiSearch()
+            lifecycleScope.launch {
+                queryApiSearch()
+            }
         }
 
         loadLocal()
@@ -109,7 +113,7 @@ class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener, SearchListA
         return binding.root
     }
 
-    private fun queryApiSearch() {
+    private suspend fun queryApiSearch() {
         val query = binding.addSearchQueryText.text.toString().trim()
         if (query.isNotEmpty()) {
             if (toggleAnimeOrMovie) {
@@ -122,6 +126,14 @@ class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener, SearchListA
                     displaySearchResults()
                     binding.movieListRecyclerView.visibility = View.VISIBLE
                 }
+            }else{
+                val result = movieSearch(query)
+                handleMovieSearchResult(result)
+                getSearchedFromLocal()
+                filterSearched()
+                getSearchedFromLocal()
+                displaySearchResults()
+                binding.movieListRecyclerView.visibility = View.VISIBLE
             }
         }
     }
@@ -142,6 +154,121 @@ class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener, SearchListA
             movie.id !in localMovieIds
         }
         LocalStorage(requireContext()).searchedMovieList = filteredMovieList
+    }
+
+    private suspend fun movieSearch(query: String): String {
+        val apiKey = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2N2RmYzlhZjJiYWM2MmY5NjA5NjZmNDEyNmFjZGY4ZiIsInN1YiI6IjY1NzFiNDFhYjA0NjA1MDExZDcyN2VlZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aG-psNKl0wZcaRGqtHBB41GDkIxgn7EZlhwjeOY18_E"
+        val apiUrl = "https://api.themoviedb.org/3/search/movie?query=${URLEncoder.encode(query, "UTF-8")}&include_adult=false&language=en-US&page=1"
+        val authHeader = "Bearer $apiKey"
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(apiUrl)
+                val connection = url.openConnection() as HttpURLConnection
+
+                // Set authorization header
+                connection.setRequestProperty("Authorization", authHeader)
+
+                val inputStream = connection.inputStream
+                val reader = BufferedReader(InputStreamReader(inputStream))
+                val response = StringBuilder()
+
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    response.append(line)
+                }
+
+                reader.close()
+                inputStream.close()
+
+                return@withContext response.toString()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            return@withContext ""
+        }
+    }
+    private fun handleMovieSearchResult(result: String) {
+        try {
+            val jsonResponse = JSONObject(result)
+
+            // Check if "results" key exists
+            if (jsonResponse.has("results")) {
+                val resultsArray = jsonResponse.getJSONArray("results")
+
+                // Create a list to store MovieDetails objects
+                val searchedMovieListPrivate = mutableListOf<MovieDetails>()
+
+                for (i in 0 until resultsArray.length()) {
+                    val movieObject = resultsArray.getJSONObject(i)
+
+                    val movieId = movieObject.getInt("id")
+                    val title = movieObject.getString("title")
+                    val releaseDate = movieObject.getString("release_date").substring(0, 4)
+                    val genresArray = movieObject.getJSONArray("genre_ids")
+                    val genres = mutableListOf<String>()
+
+                    for (j in 0 until min(2, genresArray.length())) {
+                        val genreId = genresArray.getInt(j)
+                        genres.add(getGenreNameById(genreId))
+                    }
+
+                    val posterPath = movieObject.getString("poster_path")
+                    val posterLink = "https://image.tmdb.org/t/p/w500$posterPath"
+                    val overview = movieObject.getString("overview")
+                    val popularity = movieObject.getDouble("popularity").toString()
+
+                    val movieDetails = MovieDetails(
+                        movieId,
+                        posterLink,
+                        "Movie",
+                        title,
+                        releaseDate,
+                        genres.joinToString(),
+                        popularity,
+                        "",
+                        "",
+                        overview,
+                        "",
+                        isWatched = false, isRemoved = false
+                    )
+                    searchedMovieListPrivate.add(movieDetails)
+                }
+
+                LocalStorage(requireContext()).searchedMovieList = searchedMovieListPrivate
+            } else {
+                Log.w("MovieSearchTask", "No 'results' key found in the JSON response")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    private fun getGenreNameById(genreId: Int): String {
+        val genreMap = mapOf(
+            28 to "Action",
+            12 to "Adventure",
+            16 to "Animation",
+            35 to "Comedy",
+            80 to "Crime",
+            99 to "Documentary",
+            18 to "Drama",
+            10751 to "Family",
+            14 to "Fantasy",
+            36 to "History",
+            27 to "Horror",
+            10402 to "Music",
+            9648 to "Mystery",
+            10749 to "Romance",
+            878 to "Science Fiction",
+            10770 to "TV Movie",
+            53 to "Thriller",
+            10752 to "War",
+            37 to "Western"
+        )
+
+        return genreMap.getOrDefault(genreId, "Unknown Genre")
     }
 
     private suspend fun animeSearch(query: String): String {
@@ -231,7 +358,7 @@ class HomeFragment : Fragment(), HomeListAdapter.ListReloadListener, SearchListA
                         newDuration,
                         "Studio: ${studio.joinToString()}",
                         synopsis,
-                        "unrated",
+                        "",
                         isWatched = false, isRemoved = false
                     )
                     searchedMovieListPrivate.add(movieDetails)

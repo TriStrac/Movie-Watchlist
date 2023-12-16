@@ -22,13 +22,13 @@ class MovieDetailsViewActivity : AppCompatActivity() {
             val posterURL = movie.poster
             Picasso.get().load(posterURL).into(binding.moviePosterView)
             binding.typeText.text = movie.type
-            binding.titleText.text = movie.name
-            binding.airedText.text = movie.releaseDate
-            binding.genresText.text = movie.genre
-            binding.ratingText.text = movie.credential
-            binding.durationText.text = movie.duration
+            binding.titleText.text = "Title: ${movie.name} "
+            binding.airedText.text = "Release Year: ${movie.releaseDate}"
+            binding.genresText.text = "Genre: ${movie.genre}"
+            binding.ratingText.text = "Rating: ${movie.credential}"
+            binding.durationText.text = "Duration: ${movie.duration}"
             binding.directorText.text = movie.director
-            binding.synopsisText.text = movie.synopsis
+            binding.synopsisText.text = "Synopsis: ${movie.synopsis}"
         }
     }
     private fun getMovieDetails(id:Int): MovieDetails?{

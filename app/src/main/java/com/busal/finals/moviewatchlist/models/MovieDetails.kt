@@ -11,7 +11,7 @@ data class MovieDetails (
     val duration: String,
     val director: String,
     val synopsis: String,
-    val userRating: String,
+    var userRating: String,
     var isWatched: Boolean,
     var isRemoved: Boolean,
 )

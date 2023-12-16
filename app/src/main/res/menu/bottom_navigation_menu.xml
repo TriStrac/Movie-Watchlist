@@ -13,12 +13,4 @@
         android:id="@+id/watchedMenu"
         android:icon="@drawable/filled_baseline_fact_check_24"
         android:title="Watched" />
-    <item
-        android:id="@+id/settingsMenu"
-        android:icon="@drawable/filled_baseline_settings_24"
-        android:title="Settings" />
-    <item
-        android:id="@+id/profileMenu"
-        android:icon="@drawable/filled_baseline_person_24"
-        android:title="Profile" />
 </menu>

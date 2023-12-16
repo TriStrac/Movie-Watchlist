@@ -2,6 +2,8 @@ package com.busal.finals.moviewatchlist.adapter
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +12,10 @@ import com.busal.finals.moviewatchlist.databinding.ActivitySearchListAdapterBind
 import com.busal.finals.moviewatchlist.models.MovieDetails
 import com.busal.finals.moviewatchlist.storage.LocalStorage
 import com.squareup.picasso.Picasso
+import jp.co.cyberagent.android.gpuimage.GPUImage
+import jp.co.cyberagent.android.gpuimage.filter.GPUImageBrightnessFilter
+import jp.co.cyberagent.android.gpuimage.filter.GPUImageGaussianBlurFilter
+import java.lang.Exception
 
 
 class SearchListAdapter(
@@ -28,7 +34,22 @@ class SearchListAdapter(
         fun bind(position: Int){
             val selectedMovie = adapter.searchedMovieLists[position]
             val posterURL = selectedMovie.poster
-            Picasso.get().load(posterURL).into(binding.searchedMoviePoster)
+            Picasso.get().load(posterURL).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    if (bitmap != null) {
+                        // Apply blur to the bitmap
+                        val blurredBitmap = applyBlurAndDarken(bitmap)
+
+                        // Set the blurred bitmap to the ImageView
+                        binding.searchedMoviePoster.setImageBitmap(blurredBitmap)
+                    }
+                }
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                }
+
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                }
+            })
             binding.searchedMovieTitleText.text = selectedMovie.name
             binding.searchedYearText.text = selectedMovie.releaseDate
             binding.searchedGenreText.text = selectedMovie.genre
@@ -46,6 +67,22 @@ class SearchListAdapter(
                 intent.putExtra("PARAM_ADDORCHECK",true)
                 activity.startActivity(intent)
             }
+        }
+        private fun applyBlurAndDarken(originalBitmap: Bitmap): Bitmap {
+            val gpuImage = GPUImage(activity)
+            gpuImage.setImage(originalBitmap)
+
+            // Apply blur
+            val blurFilter = GPUImageGaussianBlurFilter(0.8f)
+            gpuImage.setFilter(blurFilter)
+            val blurredBitmap = gpuImage.bitmapWithFilterApplied
+
+            // Apply darken
+            val darkenFilter = GPUImageBrightnessFilter(-0.2f) // Adjust the brightness value as needed
+            gpuImage.setImage(blurredBitmap)
+            gpuImage.setFilter(darkenFilter)
+
+            return gpuImage.bitmapWithFilterApplied
         }
     }
     private fun reloadList(source:String){

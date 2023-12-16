@@ -32,6 +32,7 @@
             android:layout_height="45dp"
             android:layout_marginTop="16dp"
             android:text="Long movie title long movie title long movie title"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.512"
@@ -42,15 +43,16 @@
             android:id="@+id/searchedGenreText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
             android:text="Genre"
             android:textAlignment="center"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/searchedYearText"
+            app:layout_constraintBottom_toBottomOf="@+id/searchedAddToWatchListButton"
             app:layout_constraintEnd_toStartOf="@+id/searchedAddToWatchListButton"
-            app:layout_constraintHorizontal_bias="0.51"
             app:layout_constraintStart_toEndOf="@+id/searchedYearText"
-            app:layout_constraintTop_toTopOf="@+id/searchedYearText"
+            app:layout_constraintTop_toTopOf="@+id/searchedAddToWatchListButton"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
@@ -60,6 +62,7 @@
             android:layout_marginTop="10dp"
             android:text="Year"
             android:textAlignment="textStart"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@+id/searchedMovieTitleText"
             app:layout_constraintTop_toBottomOf="@+id/searchedMovieTitleText" />

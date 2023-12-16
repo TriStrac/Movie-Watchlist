@@ -29,6 +29,7 @@ android {
     }
     buildFeatures{
         viewBinding = true
+        buildFeatures.dataBinding = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -43,7 +44,9 @@ dependencies {
 
     implementation ("com.google.code.gson:gson:2.9.0")
     implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation ("jp.co.cyberagent.android:gpuimage:2.1.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+
 
 
     implementation("androidx.core:core-ktx:1.12.0")
